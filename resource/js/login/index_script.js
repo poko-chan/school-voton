@@ -9,7 +9,7 @@ let deferredPrompt;
 
 // --- PWAインストール機能 ---
 window.addEventListener('beforeinstallprompt', (e) => {
-    // 標準のポップアップを抑止
+    // 標準のポップアップを抑止する
     e.preventDefault();
     deferredPrompt = e;
     // インストールボタンを表示
