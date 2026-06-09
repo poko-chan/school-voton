@@ -1,4 +1,3 @@
-// 1. Supabaseの初期設定
 const SUPABASE_URL = 'https://aflmhkxgoxnwxerzhkqo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmbG1oa3hnb3hud3hlcnpoa3FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTY3NDgsImV4cCI6MjA5NjUzMjc0OH0.zbs5qIWSULf3CKqTdLzXYm3FG-wT13KHsapnzDaHYnM';
 
@@ -8,25 +7,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loadingMsg = document.getElementById('loading-msg');
     const settingsForm = document.getElementById('settings-form');
     const usernameInput = document.getElementById('username-input');
+    const avatarInput = document.getElementById('avatar-input'); // 追加
     const backBtn = document.getElementById('back-btn');
 
-    // 2. ログイン状態のチェック
+    // ログイン状態チェック
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
 
     if (authError || !user) {
-        console.error('認証エラー、またはセッションがありません:', authError);
-        alert('ログインセッションが切れました。ログイン画面に戻ります。');
+        alert('ログインセッションが切れました。');
         window.location.href = '../login/index.html';
         return;
     }
 
     const userUID = user.id;
 
-    // 3. データベース（profiles）から現在のユーザー情報を取得 (SELECT)
-    // ※先ほど作成したSELECTポリシーがここで役に立ちます！
+    // データベースから full_name と avatar_url を取得
     const { data: profile, error: selectError } = await supabaseClient
         .from('profiles')
-        .select('full_name')
+        .select('full_name, avatar_url') // avatar_urlを追加
         .eq('user_id', userUID)
         .single();
 
@@ -36,18 +34,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 現在の名前を入力欄にセットし、フォームを表示する
+    // 入力欄に初期値をセット
     if (profile) {
         usernameInput.value = profile.full_name || '';
+        avatarInput.value = profile.avatar_url || ''; // 追加
         loadingMsg.style.display = 'none';
         settingsForm.style.display = 'block';
     }
 
-    // 4. 「設定を保存」ボタン（フォーム送信）の処理 (UPDATE)
+    // 保存処理
     settingsForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); // 画面のリロードを防ぐ
+        e.preventDefault();
         
         const newName = usernameInput.value.trim();
+        const newAvatar = avatarInput.value.trim(); // 追加
+
         if (!newName) {
             alert('名前を入力してください。');
             return;
@@ -55,11 +56,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         console.log('プロファイルを更新中...');
         
-        // データベースのフルネームを更新
+        // full_name と avatar_url を両方アップデート
         const { error: updateError } = await supabaseClient
             .from('profiles')
-            .update({ full_name: newName })
-            .eq('user_id', userUID); // 自分のUIDの行を狙い撃ち
+            .update({ 
+                full_name: newName,
+                avatar_url: newAvatar // 追加
+            })
+            .eq('user_id', userUID);
 
         if (updateError) {
             console.error('データ更新エラー:', updateError.message);
@@ -70,7 +74,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 5. 「ダッシュボードに戻る」ボタンの処理
     if (backBtn) {
         backBtn.addEventListener('click', () => {
             window.location.href = '../dashboard/index.html';

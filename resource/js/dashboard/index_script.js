@@ -1,4 +1,3 @@
-// 1. Supabaseの初期設定
 const SUPABASE_URL = 'https://aflmhkxgoxnwxerzhkqo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmbG1oa3hnb3hud3hlcnpoa3FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTY3NDgsImV4cCI6MjA5NjUzMjc0OH0.zbs5qIWSULf3CKqTdLzXYm3FG-wT13KHsapnzDaHYnM';
 
@@ -6,26 +5,25 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener('DOMContentLoaded', async () => {
     const userInfoDiv = document.getElementById('user-info');
+    const userAvatarImg = document.getElementById('user-avatar'); // 追加
     const settingsBtn = document.getElementById('settings-btn');
     const logoutBtn = document.getElementById('logout-btn');
 
-    // 2. ログインユーザー情報を取得
     const { data: { user }, error } = await supabaseClient.auth.getUser();
 
     if (error || !user) {
-        console.error('認証エラー、またはセッションがありません:', error);
-        if (userInfoDiv) userInfoDiv.innerText = 'ログインセッションがありません。ログイン画面に戻ります。';
+        console.error('認証エラー:', error);
+        if (userInfoDiv) userInfoDiv.innerText = 'ログインセッションがありません。';
         setTimeout(() => { window.location.href = '../login/index.html'; }, 2000);
         return;
     }
 
     const userUID = user.id;
 
-    // 3. データベース（profiles）から、現在の最新データを取得する
-    // ※Googleのデータではなく、データベースに既にある名前（設定画面で変えた名前）を優先するため
+    // データベースから full_name と avatar_url を両方持ってくる
     const { data: existingProfile, error: selectError } = await supabaseClient
         .from('profiles')
-        .select('full_name')
+        .select('full_name, avatar_url') // avatar_urlを追加
         .eq('user_id', userUID)
         .single();
 
@@ -34,20 +32,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let displayName = '';
+    let displayAvatar = ''; // 追加
 
     if (existingProfile) {
-        // 【既存ユーザーの場合】
-        // 設定画面等で変更された「データベース内の名前」をそのまま画面に表示（上書きしない！）
-        console.log('既存ユーザーです。データベースのデータをそのまま使用します。');
+        console.log('既存ユーザーです。');
         displayName = existingProfile.full_name;
+        displayAvatar = existingProfile.avatar_url; // 追加
     } else {
-        // 【完全に新規のユーザーの場合のみ】
-        // 初めてのログインなので、Googleのデータをデータベースに新規保存（insert）する
         console.log('新規ユーザーです。プロファイルを作成します。');
         
         const googleName = user.user_metadata.full_name || user.email;
         const googleAvatar = user.user_metadata.avatar_url || '';
         displayName = googleName;
+        displayAvatar = googleAvatar; // 追加
 
         const { error: insertError } = await supabaseClient
             .from('profiles')
@@ -62,15 +59,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 4. 確定した名前（既存ならDBの名前、新規ならGoogleの名前）を画面に表示
+    // 画面への反映
     if (userInfoDiv) {
         userInfoDiv.innerText = `ようこそ、${displayName} さん！`;
     }
     
-    // URLの後ろの長いトークンを消す
+    // アバター画像があれば表示（追加）
+    if (userAvatarImg && displayAvatar) {
+        userAvatarImg.src = displayAvatar;
+        userAvatarImg.style.display = 'block'; // 非表示解除
+    } else if (userAvatarImg) {
+        userAvatarImg.style.display = 'none'; // 画像URLが無ければ隠す
+    }
+    
     window.history.replaceState({}, document.title, window.location.pathname);
 
-    // --- ボタンのイベント処理 ---
+    // ボタンのイベント処理
     if (settingsBtn) {
         settingsBtn.addEventListener('click', () => {
             window.location.href = '../settings/index.html';

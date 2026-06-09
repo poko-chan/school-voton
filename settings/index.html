@@ -17,17 +17,20 @@
             <input type="text" id="username-input" required style="padding: 8px; width: 250px;">
         </div>
 
+        <div style="margin-bottom: 15px;">
+            <label for="avatar-input" style="display: block; margin-bottom: 5px; font-weight: bold;">プロフィール画像URL</label>
+            <input type="url" id="avatar-input" placeholder="https://example.com/image.png" style="padding: 8px; width: 400px;">
+        </div>
+
         <button type="submit" id="save-btn" style="padding: 8px 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px;">
             設定を保存
         </button>
-
         <button type="button" id="back-btn" style="padding: 8px 16px; cursor: pointer; margin-left: 10px; background-color: #ccc; border: none; border-radius: 4px;">
             ダッシュボードに戻る
         </button>
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="../resource/js/settings/index_script.js"></script>
 </body>
 </html>
