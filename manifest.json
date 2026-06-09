@@ -1,16 +1,18 @@
 {
+  "name": "Voton school support",
   "short_name": "school-V",
-  "name": "school-Voton",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0078d4",
+  "description": "学校の生活をサポートするためのWebアプリケーション",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/resource/img/icon-512.png",
+      "src": "/resource/img/icon-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any"
     }
-  ],
-  "start_url": "/login/index.html",
-  "background_color": "#f4f6f9",
-  "theme_color": "#2c3e50",
-  "display": "standalone",
-  "orientation": "portrait"
+  ]
 }
