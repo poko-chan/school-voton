@@ -4,105 +4,85 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 2. 画面が開いたらトークンを解析してユーザー情報を取得
 document.addEventListener('DOMContentLoaded', async () => {
     const userInfoDiv = document.getElementById('user-info');
     const settingsBtn = document.getElementById('settings-btn');
     const logoutBtn = document.getElementById('logout-btn');
 
-    // SupabaseがURLの後ろの #access_token=... を自動解析してユーザー情報を取得
+    // 2. ログインユーザー情報を取得
     const { data: { user }, error } = await supabaseClient.auth.getUser();
 
     if (error || !user) {
-        // ログインセッションが無い、またはエラーの場合はログイン画面へ戻す
         console.error('認証エラー、またはセッションがありません:', error);
         if (userInfoDiv) userInfoDiv.innerText = 'ログインセッションがありません。ログイン画面に戻ります。';
-        
-        setTimeout(() => {
-            window.location.href = '../login/index.html';
-        }, 2000);
-        return; // 処理を終了
+        setTimeout(() => { window.location.href = '../login/index.html'; }, 2000);
+        return;
     }
 
-    // --- データベース（int8主キー設計）の処理 ---
-    const userUID = user.id; // Googleログインから発行されたUUID
-    const userName = user.user_metadata.full_name || user.email;
-    const userAvatar = user.user_metadata.avatar_url || '';
+    const userUID = user.id;
 
-    // 1. すでにこの user_id (UUID) が profiles テーブルに登録されているか確認
+    // 3. データベース（profiles）から、現在の最新データを取得する
+    // ※Googleのデータではなく、データベースに既にある名前（設定画面で変えた名前）を優先するため
     const { data: existingProfile, error: selectError } = await supabaseClient
         .from('profiles')
-        .select('id')
+        .select('full_name')
         .eq('user_id', userUID)
-        .single(); // 1件だけ取得
+        .single();
 
-    // PGRST116 は「データが見つからない」という正常なエラーコードなので、それ以外をエラーログに出す
     if (selectError && selectError.code !== 'PGRST116') { 
         console.error('データベース確認エラー:', selectError.message);
     }
 
-    let dbError;
+    let displayName = '';
 
     if (existingProfile) {
-        // 2-A. すでに登録されているユーザーの場合は【更新 (update)】
-        console.log('既存ユーザーです。プロファイルを更新します。');
-        const { error } = await supabaseClient
-            .from('profiles')
-            .update({ 
-                full_name: userName,
-                avatar_url: userAvatar
-            })
-            .eq('user_id', userUID);
-        dbError = error;
+        // 【既存ユーザーの場合】
+        // 設定画面等で変更された「データベース内の名前」をそのまま画面に表示（上書きしない！）
+        console.log('既存ユーザーです。データベースのデータをそのまま使用します。');
+        displayName = existingProfile.full_name;
     } else {
-        // 2-B. 初めてのユーザーの場合は【新規追加 (insert)】
+        // 【完全に新規のユーザーの場合のみ】
+        // 初めてのログインなので、Googleのデータをデータベースに新規保存（insert）する
         console.log('新規ユーザーです。プロファイルを作成します。');
-        const { error } = await supabaseClient
+        
+        const googleName = user.user_metadata.full_name || user.email;
+        const googleAvatar = user.user_metadata.avatar_url || '';
+        displayName = googleName;
+
+        const { error: insertError } = await supabaseClient
             .from('profiles')
             .insert({ 
-                user_id: userUID, // GoogleのUIDをここに保存
-                full_name: userName,
-                avatar_url: userAvatar
+                user_id: userUID,
+                full_name: googleName,
+                avatar_url: googleAvatar
             });
-        dbError = error;
+
+        if (insertError) {
+            console.error('新規登録エラー:', insertError.message);
+        }
     }
 
-    if (dbError) {
-        console.error('データベース同期エラー:', dbError.message);
-    } else {
-        console.log('データベースとの同期が正常に完了しました！');
-    }
-
-    // ログインユーザーの名前を画面に表示
+    // 4. 確定した名前（既存ならDBの名前、新規ならGoogleの名前）を画面に表示
     if (userInfoDiv) {
-        userInfoDiv.innerText = `ようこそ、${userName} さん！`;
+        userInfoDiv.innerText = `ようこそ、${displayName} さん！`;
     }
     
-    // URLの後ろの長いトークン（#access_token=...）をブラウザの履歴から消して見た目をスッキリさせる
+    // URLの後ろの長いトークンを消す
     window.history.replaceState({}, document.title, window.location.pathname);
 
-
     // --- ボタンのイベント処理 ---
-
-    // 設定画面へ遷移するボタンの処理
     if (settingsBtn) {
         settingsBtn.addEventListener('click', () => {
-            console.log('設定画面に移動します...');
             window.location.href = '../settings/index.html';
         });
     }
 
-    // ログアウトボタンの処理
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            console.log('ログアウト処理を開始します...');
             const { error: logoutError } = await supabaseClient.auth.signOut();
-
             if (logoutError) {
-                console.error('ログアウトエラー:', logoutError.message);
                 alert('ログアウトに失敗しました: ' + logoutError.message);
             } else {
-                console.log('ログアウト成功。ログイン画面に移動します。');
                 window.location.href = '../login/index.html';
             }
         });
