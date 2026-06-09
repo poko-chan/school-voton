@@ -12,14 +12,11 @@
 <body>
 
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f9f9f9;">
-        
         <div style="text-align: center; background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 320px;">
-            
             <h1 style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 24px; color: #333333; margin-bottom: 24px; font-weight: 600;">ログイン</h1>
             
-            <button class="gsi-material-button" style="margin: 0 auto;">
+            <button type="button" class="gsi-material-button" id="google-login-btn" style="display: inline-block;">
                 <div class="gsi-material-button-state"></div>
-                
                 <div class="gsi-material-button-content-wrapper">
                     <svg class="gsi-material-button-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -30,10 +27,11 @@
                     <span class="gsi-material-button-contents">Google でログイン</span>
                 </div>
             </button>
-            
         </div>
-
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="../resource/js/login/index_script.js"></script>
 </body>
 </html>
