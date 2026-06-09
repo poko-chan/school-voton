@@ -1,111 +1,87 @@
-@charset "UTF-8";
-
-.gsi-material-button {
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  -webkit-appearance: none;
-  background-color: #f2f2f2;
-  background-image: none;
-  border: none;
-  -webkit-border-radius: 20px;
-  border-radius: 20px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  color: #1f1f1f;
-  cursor: pointer;
-  font-family: 'Roboto', arial, sans-serif;
-  font-size: 14px;
-  height: 40px;
-  letter-spacing: 0.25px;
-  outline: none;
-  overflow: hidden;
-  padding: 0 12px;
-  position: relative;
-  text-align: center;
-  -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
-  transition: background-color .218s, border-color .218s, box-shadow .218s;
-  vertical-align: middle;
-  white-space: nowrap;
-  width: auto;
-  max-width: 400px;
-  min-width: min-content;
+/* 全体のリセットと背景設定 */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
 }
 
-.gsi-material-button .gsi-material-button-icon {
-  height: 20px;
-  margin-right: 10px;
-  min-width: 20px;
-  width: 20px;
+/* 画面の真ん中に要素を集めるコンテナ */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
-.gsi-material-button .gsi-material-button-content-wrapper {
-  -webkit-align-items: center;
-  align-items: center;
-  display: flex;
-  -webkit-flex-direction: row;
-  flex-direction: row;
-  -webkit-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  height: 100%;
-  justify-content: space-between;
-  position: relative;
-  width: 100%;
+/* ログインカードのデザイン */
+.login-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    max-width: 360px;
+    width: 90%;
 }
 
-.gsi-material-button .gsi-material-button-contents {
-  -webkit-flex-grow: 1;
-  flex-grow: 1;
-  font-family: 'Roboto', arial, sans-serif;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: top;
+/* タイトルとサブタイトル */
+.app-title {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    color: #2c3e50;
+    font-weight: bold;
 }
 
-.gsi-material-button .gsi-material-button-state {
-  -webkit-transition: opacity .218s;
-  transition: opacity .218s;
-  bottom: 0;
-  left: 0;
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
+.app-subtitle {
+    margin: 0 0 30px 0;
+    font-size: 14px;
+    color: #7f8c8d;
 }
 
-/* 無効化（disabled）時のスタイル */
-.gsi-material-button:disabled {
-  cursor: default;
-  background-color: #ffffff61;
+/* Googleログインボタン */
+.google-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    background-color: #ffffff;
+    color: #757575;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-.gsi-material-button:disabled .gsi-material-button-state {
-  background-color: #1f1f1f1f;
+.google-btn:hover {
+    background-color: #f7f9fa;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.gsi-material-button:disabled .gsi-material-button-contents {
-  opacity: 38%;
+.google-icon {
+    margin-right: 12px;
 }
 
-.gsi-material-button:disabled .gsi-material-button-icon {
-  opacity: 38%;
+/* 注意書き・規約リンク（追加） */
+.legal-notice {
+    margin-top: 24px;
+    font-size: 11px;
+    color: #95a5a6;
+    line-height: 1.6;
 }
 
-/* アクティブ・フォーカス時のスタイル */
-.gsi-material-button:not(:disabled):active .gsi-material-button-state, 
-.gsi-material-button:not(:disabled):focus .gsi-material-button-state {
-  background-color: #001d35;
-  opacity: 12%;
+.legal-notice a {
+    color: #3498db;
+    text-decoration: none;
 }
 
-/* ホバー時のスタイル */
-.gsi-material-button:not(:disabled):hover {
-  -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
-  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
-}
-
-.gsi-material-button:not(:disabled):hover .gsi-material-button-state {
-  background-color: #001d35;
-  opacity: 8%;
+.legal-notice a:hover {
+    text-decoration: underline;
 }
