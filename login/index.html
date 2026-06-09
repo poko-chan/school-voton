@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <link rel="manifest" href="/manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ログイン - school-Voton</title>
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="../resource/css/login/style.css">
 </head>
 <body>
@@ -24,6 +24,10 @@
                 Googleでログイン
             </button>
 
+            <button type="button" id="pwa-install-btn" class="pwa-btn">
+                アプリをインストール
+            </button>
+
             <div class="legal-notice">
                 ログインすることで、<a href="../privacy/index.html" target="_blank">プライバシーポリシー</a>および<a href="../terms/index.html" target="_blank">利用規約</a>に同意したものとみなされます。
             </div>
@@ -31,7 +35,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script src="../resource/js/login/index_script.js"></script>
 </body>
 </html>
