@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設定 - school-V</title>
+</head>
+<body>
+
+    <h1>アカウント設定</h1>
+    
+    <div id="loading-msg">情報を読み込み中...</div>
+
+    <form id="settings-form" style="display: none; margin-top: 20px;">
+        <div style="margin-bottom: 15px;">
+            <label for="username-input" style="display: block; margin-bottom: 5px; font-weight: bold;">表示名</label>
+            <input type="text" id="username-input" required style="padding: 8px; width: 250px;">
+        </div>
+
+        <button type="submit" id="save-btn" style="padding: 8px 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px;">
+            設定を保存
+        </button>
+
+        <button type="button" id="back-btn" style="padding: 8px 16px; cursor: pointer; margin-left: 10px; background-color: #ccc; border: none; border-radius: 4px;">
+            ダッシュボードに戻る
+        </button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="../resource/js/settings/index_script.js"></script>
+</body>
+</html>

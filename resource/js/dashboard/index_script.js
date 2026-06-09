@@ -7,6 +7,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // 2. 画面が開いたらトークンを解析してユーザー情報を取得
 document.addEventListener('DOMContentLoaded', async () => {
     const userInfoDiv = document.getElementById('user-info');
+    const settingsBtn = document.getElementById('settings-btn');
     const logoutBtn = document.getElementById('logout-btn');
 
     // SupabaseがURLの後ろの #access_token=... を自動解析してユーザー情報を取得
@@ -23,8 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return; // 処理を終了
     }
 
-    // --- 👇 ここからデータベース（int8主キー設計）の処理 👇 ---
-    
+    // --- データベース（int8主キー設計）の処理 ---
     const userUID = user.id; // Googleログインから発行されたUUID
     const userName = user.user_metadata.full_name || user.email;
     const userAvatar = user.user_metadata.avatar_url || '';
@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         dbError = error;
     } else {
         // 2-B. 初めてのユーザーの場合は【新規追加 (insert)】
-        // ※ id (int8) はデータベース側で自動連番（1, 2, 3...）が振られるため指定不要です
         console.log('新規ユーザーです。プロファイルを作成します。');
         const { error } = await supabaseClient
             .from('profiles')
@@ -74,8 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('データベースとの同期が正常に完了しました！');
     }
 
-    // --- 👆 データベース処理ここまで 👆 ---
-
     // ログインユーザーの名前を画面に表示
     if (userInfoDiv) {
         userInfoDiv.innerText = `ようこそ、${userName} さん！`;
@@ -83,6 +80,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // URLの後ろの長いトークン（#access_token=...）をブラウザの履歴から消して見た目をスッキリさせる
     window.history.replaceState({}, document.title, window.location.pathname);
+
+
+    // --- ボタンのイベント処理 ---
+
+    // 設定画面へ遷移するボタンの処理
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            console.log('設定画面に移動します...');
+            window.location.href = '../settings/index.html';
+        });
+    }
 
     // ログアウトボタンの処理
     if (logoutBtn) {
